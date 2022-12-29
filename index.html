@@ -127,8 +127,8 @@
             page,
           {
             headers: {
-              Authorization:
-                "Bearer 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",
+              'Authorization':
+                "Bearer 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",
             },
           }
         );
@@ -162,7 +162,7 @@
 
         chart2.data.labels.push(name);
         chart2.data.datasets.forEach((dataset) => {
-          // number of commits
+          // words of commits
           dataset.data.push((stats.words / stats.commits).toFixed(0));
         });
         chart2.update();

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course work - group</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a href="./girls.html" class="btn">Girls</a>
+
+    <div class="statistic-block">
+      <canvas id="myChart" class="statistic-cart"></canvas>
+    </div>
+    <div class="statistic-block">
+      <canvas id="myChart2" class="statistic-cart"></canvas>
+    </div>
+    <div class="statistic-block">
+      <canvas id="myChart3" class="statistic-cart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      const ctx1 = document.getElementById("myChart");
+
+      const chart1 = new Chart(ctx1, {
+        type: "bar",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "# of Commits",
+              data: [],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      const ctx2 = document.getElementById("myChart2");
+
+      const chart2 = new Chart(ctx2, {
+        type: "bar",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "commit quality",
+              data: [],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+      const ctx3 = document.getElementById("myChart3");
+
+      const chart3 = new Chart(
+        ctx3,
+        (config = {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              title: {
+                display: true,
+                text: "a",
+              },
+            },
+          },
+        })
+      );
+
+      const urls = {
+        "Айдин Алманбетов": "aidinfef/progekt-2",
+        "Досбол Орозобеков": "OrozobekovDosbol/HAUS-Figma",
+        "Алмир Абдрасулов": "Ala-key/14.12.22",
+        "Атак Осконбаев": "LoLiPoP190/14.12.22",
+        "Эржан Байгазиев": "Baigaziev/term-paper",
+        "Бекмырза Саданбеков": "SadambekovBekmyrza/course-work",
+        "Самарбек Жумакадыров": "sfera1111111/CourseWork",
+        "Бекзат Имашев": "imashevw/MAKET",
+        "Айдин Касеинов": "AydinKaseyinoff/CoffeeShopFigma",
+        "Насыр Хуров": "nasyr09khyrov/courses-work",
+        "Салтанат Эгизбаева": "saltanatka1/course-work",
+        "Айжаныл Элукенова": "elukenova/course",
+        "Бегайым Турдукеева": "TurdukeevaBegaiym/Course.work.figma",
+        "Сауле Тойгонбаева": "saule-06/Course-work1",
+        "Сезим Алиаскарова": "sezim06/maket",
+        "Адилет Исаев": "adiletit88/figma",
+        "Арсен Сыргаков": "arsenlenovo/16.12.22",
+        "Байыр Эмилов": "BakuEmilov/maket",
+        "Данияр Кемелбеков": "KemelbekovDaniyar/layout-1",
+        // "Керемет Орузбаева": "oruzbaevas01",
+        // "Эмир Орузбаев": "musaev121212",
+        "Бекболсун Жармаматов": "Bekbo1sun/---------1",
+        "Эрбол Алымбеков": "Erbol2/dimploma-2",
+      };
+
+      async function getStats(repo, stats = {}, page = 1) {
+        var result = await fetch(
+          "https://api.github.com/repos/" +
+            repo +
+            "/commits?per_page=100&page=" +
+            page,
+          {
+            headers: {
+              Authorization:
+                "Bearer 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",
+            },
+          }
+        );
+        var data = Object.values(await result.json());
+
+        stats.commits = (stats.commits ? stats.commits : 0) + data.length;
+        stats.words = stats.words ? stats.words : 0;
+
+        data.forEach((item) => {
+          if (item && item.commit && item.commit.message) {
+            stats.words += item.commit.message.split(" ").length;
+          }
+        });
+
+        if (data.length == 100) {
+          return await getStats(repo, stats, page + 1);
+        } else {
+          return stats;
+        }
+      }
+
+      Object.keys(urls).forEach(async function (name) {
+        var stats = await getStats(urls[name]);
+
+        chart1.data.labels.push(name);
+        chart1.data.datasets.forEach((dataset) => {
+          // number of commits
+          dataset.data.push(stats.commits);
+        });
+        chart1.update();
+
+        chart2.data.labels.push(name);
+        chart2.data.datasets.forEach((dataset) => {
+          // number of commits
+          dataset.data.push((stats.words / stats.commits).toFixed(0));
+        });
+        chart2.update();
+      });
+    </script>
+  </body>
+</html>
